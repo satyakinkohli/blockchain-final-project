@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			body {
+				background-color: black;
+				overflow: hidden;
+				color: white;
+			}
+
+			.row {
+				display: flex;
+			}
+
+			.column img {
+				padding: 10px;
+				flex-shrink: 0;
+				min-width: 100%;
+				min-height: 100%;
+			}
+
+			.column {
+				display: flex;
+				flex: 50%;
+				justify-content: center;
+				align-items: center;
+				overflow: hidden;
+			}
+		</style>
+		<title>Blockchain</title>
+	</head>
+	<body>
+		<div class="row">
+			<div class="column">
+				<div>
+					<div style="margin-top: -200px">
+						<h2><u>GradeNewScope</u></h2>
+					</div>
+					<div style="font-size: large; position: absolute; margin-top: 100px">
+						<form action="" method="post">
+							<label for="email">Email:</label>
+							<input style="border-radius: 0px;" type="text" id="email" name="email" /><br /><br />
+							<label for="uname">Username:</label>
+							<input style="border-radius: 0px;" type="text" id="uname" name="uname" /><br /><br />
+							<label for="passwd">Password:</label>
+							<input style="border-radius: 0px;" type="text" id="passwd" name="passwd" /><br /><br />
+							<input style="border-radius: 10px; font-size: large;"
+							type="submit" name="welcomeuser" value="Sign In" />
+							<input style="border-radius: 10px; font-size: large;"
+							type="submit" name="welcomeuser" value="Sign Up" />
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="column">
+				<img src="../static/student-homepage.png" />
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,181 @@
+##### IMPORTS #####
+
+from flask import Flask, request, render_template, redirect, url_for, session, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
+import subprocess
+from functools import wraps
+import json
+import utils
+
+##### GLOBAL VARIABLES #####
+
+# initialising Flask object
+app = Flask(__name__)
+# intialising the LoginManager object
+login_manager = LoginManager()
+# ???
+login_manager.init_app(app)
+# ???
+login_manager.login_view = ''
+# setting secret key to use sessions
+app.config['SECRET_KEY'] = "gradenewscope"
+# student_dict maps a student_email to student_username, student_password and the
+# wallet created for them
+student_dict = {}
+# teacherUsernames contains the list of usernames of all teachers which exist on our portal
+teacherUsernames = []
+# teacherEmails contains the list of emails of all teachers which exist on our portal
+teacherEmails = []
+# DEBUG should be true when app is in development server
+DEBUG = True
+# ???
+ACCESS = {
+    'student': 0,
+    'teacher': 1
+}
+# location of local hyperledger fabric folder
+FABRIC_DIR = "/Users/satyakinkohli/Desktop/Ashoka/Blockchain/blockchain-final-project/fabric-samples/GradeNewScope/javascript"
+# location of local node executable
+NODE_PATH = "/usr/local/bin/node"
+
+
+##### FUNCTIONS #####
+
+# homepage() - renders the homepage
+@app.route("/")
+def homepage():
+    return render_template("homepage.html")
+
+
+# login_register_post() - begins the process of sign in or sign up
+@app.route('/', methods=['POST'])
+def login_register_post():
+    if request.form['welcomeuser'] == 'Sign In':
+        if request.form['email'] in student_dict and student_dict[request.form['email']]['pwd'] == request.form['passwd']:
+            session.pop('email', None)
+            session['email'] = request.form['email']
+            login_user(User(request.form['email']))
+            return redirect(user_type(request.form['email']))
+        else:
+            flash('Incorrect email/password')
+            return redirect('/')
+    elif request.form['welcomeuser'] == 'Sign Up':
+        response = handle_setup(request.form)
+        if response == "success":
+            flash('Registration successful!', 'success')
+            return redirect('/')
+        else:
+            flash('Registration failed! You are already registered', 'error')
+            return redirect('/')
+    else:
+        print("Error!")
+
+
+# handle_setup() - registers the student in the gradenewscope portal, part I
+def handle_setup(form_data):
+    student_email = form_data['email']
+    student_username = form_data['uname']
+    student_pwd = form_data['passwd']
+
+    # if user already exists OR if no more wallets (max: 50) available, fail
+    if (student_email in student_dict) or (len(student_dict) > 50):
+        return "failure"
+    # else assign the user a wallet
+    else:
+        # populate student_dict with data of the new student
+        student_dict[student_email] = {
+            "uname": student_username,
+            "pwd": student_pwd,
+            "wallet": student_email
+        }
+        # registerUser function runs the registerUser.js and makes a physical wallet
+        if registerUser(student_dict[student_email]['wallet']) is not True:
+            student_dict.pop(student_email)
+            return "failure"
+        # utils.write_file(db_path, json.dumps(student_dict))
+        return "success"
+
+
+# registerUser() - registers the student in the gradenewscope portal, part II
+def registerUser(user):
+    output = "None"
+
+    try:
+        #subprocess.call("cd "+FABRIC_DIR,shell=True)
+        output = subprocess.check_output(
+            [NODE_PATH, FABRIC_DIR + "/registerUser.js", user], cwd=FABRIC_DIR).decode().split()
+    except:
+        pass
+
+    if DEBUG:
+        print(' '.join(output))
+
+    if output != "None" and output[len(output) - 1] == "wallet":
+        return True
+    else:
+        return False
+
+
+# class User: assigns access level to each user
+class User(UserMixin):
+    def __init__(self, id, access=ACCESS['teacher']):
+        self.id = id
+        if id in student_dict:
+            self.access = ACCESS['student']
+        elif id in teacherEmails:
+            self.access = ACCESS['teacher']
+        else:
+            print("Error!")
+
+
+# user_type(): returns the url of the page to be redirected to, depending on whether 
+# the user is a student or a teacher
+def user_type(email):
+    if email in student_dict:
+        return '/student_home'
+    elif email in teacherEmails:
+        return '/teacher_home'
+    else:
+        print("Error!")
+
+
+# load_user() - returns the User object given the user_id (the email in our case)
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
+
+# requires_access_level() - makes a function to check if a particular user has access to
+# visit that webpage
+def requires_access_level(access_level):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            user = load_user(session['email'])
+            if user.access != access_level:
+                return render_template('response.html', response="Operation not authorized!")
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
+# student_home(): renders the student homepage
+@app.route('/student_home')
+@login_required
+@requires_access_level(ACCESS['student'])
+def student_home():
+    flash('' + session['email'])
+    return render_template('student_homepage.html')
+
+
+# teacher_home(): renders the teacher homepage
+@app.route('/teacher_home')
+@login_required
+@requires_access_level(ACCESS['teacher'])
+def teacher_home():
+    flash('' + session['email'])
+    return render_template('teacher_homepage.html')
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
