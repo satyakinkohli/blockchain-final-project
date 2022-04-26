@@ -1,4 +1,5 @@
 .DS_Store*
 frontend/__pycache
+frontend/__pycache__
 frontend/temp1.py
 frontend/temp2.py
