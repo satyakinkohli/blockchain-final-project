@@ -269,7 +269,6 @@ class GradeNewScope extends Contract {
         }
     }
 
-
     async submitScore(ctx, student_id, assignment_id, marks){
         console.info('============= START : submitScore ===========');
         
