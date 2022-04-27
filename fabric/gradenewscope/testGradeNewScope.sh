@@ -6,6 +6,9 @@
 # changing directory to `javascript`
 cd javascript
 
+# enroll the admin
+node enrollAdmin.js
+
 # registering users
 node registerUser.js student1
 node registerUser.js student2
@@ -44,10 +47,10 @@ node invoke.js submitScore teacher1 "x509::/OU=client+OU=org1+OU=department1/CN=
 node invoke.js submitScore teacher2 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 75
 node invoke.js submitScore teacher3 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 98
 node invoke.js submitScore teacher4 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 24
-node invoke.js submitScore teacher5 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 53
+# node invoke.js submitScore teacher5 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 53
 
 # student queries all assignments they have submitted in the past
 node query.js queryAllAssignments student1
 
 # teacher queries all assignments which they have not graded as of now
-node query.js teacherQueryUngraded teacher1
+node query.js teacherQueryUngraded teacher5

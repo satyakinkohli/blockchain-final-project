@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Homepage</title>
 </head>
-<body>
+<body style="background-color: black; color: white;">
     <div>
         <p>Hello, {{username}}</p>
     </div>
@@ -14,24 +14,36 @@
     <div style="text-align: center">
         <form action="/student_home" id="submit_answer" name="submit_answer" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
-            <label for="testID">Test ID:</label>
-            <input style="border-radius: 0px;" type="text" id="test_id" name="test_id" /><br /><br />
+            <label for="assignmentID">Assignment ID:</label>
+            <input style="border-radius: 0px;" type="text" id="assignment_id" name="assignment_id" /><br /><br />
             <label for="studentAnswer">Answers:</label>
-            <input style="border-radius: 0px;" type="text" id="student_answer" name="student_answer" /><br /><br />
+            <input style="border-radius: 0px;" type="text" id="assignment_content" name="assignment_content" /><br /><br />
             <input style="border-radius: 10px; font-size: large;"
-            type="submit" name="student_submit" value="Submit Answer" />
+            type="submit" name="student_submit" value="Submit Assignment" />
         </form>
     </div>
+
+    {% if submit_status %}
+    <div>
+        <p>{{submit_status}}</p>
+    </div>
+    {% endif %}
 
     <div style="text-align: center">
         <form action="/student_home" id="query_assignment" name="query_assignment" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
-            <label for="testID">Test ID:</label>
-            <input style="border-radius: 0px;" type="text" id="test_id" name="test_id" /><br /><br />
+            <label for="assignmentID">Assignment ID:</label>
+            <input style="border-radius: 0px;" type="text" id="assignment_id" name="assignment_id" /><br /><br />
             <input style="border-radius: 10px; font-size: large;"
             type="submit" name="student_submit" value="Query Assignment" />
         </form>
     </div>
+
+    {% if queryOutput %}
+    <div>
+        <p>{{queryOutput}}</p>
+    </div>
+    {% endif %}
 
     <div style="text-align: center">
         <form action="/student_home" id="query_all_assignments" name="query_all_assignments" method="post">
@@ -40,5 +52,11 @@
             type="submit" name="student_submit" value="Query All Assignments" />
         </form>
     </div>
+
+    {% if queryAllOutput %}
+    <div>
+        <p>{{queryAllOutput}}</p>
+    </div>
+    {% endif %}
 </body>
 </html>
