@@ -49,13 +49,13 @@ class GradeNewScope extends Contract {
 
             if (res.value && res.value.value.toString()) {
                 // console.log(res.value.value.toString('utf8'));
-                let attempted_assignment;
+                let assignment_attempted;
                 try {
-                    attempted_assignment = JSON.parse(res.value.value.toString('utf8'));
+                    assignment_attempted = JSON.parse(res.value.value.toString('utf8'));
 
                     // update users array 
-                    if (attempted_assignment.assignment_content === "$HELLO$") {
-                        users.push(attempted_assignment.userID);
+                    if (assignment_attempted.assignment_content === "$HELLO$") {
+                        users.push(assignment_attempted.userID);
                     }
 
                 } catch (err) {
@@ -195,11 +195,11 @@ class GradeNewScope extends Contract {
                     }
 
                     // no need to show these fields anyway
-                    delete attempted_assignment.scores;
-                    delete attempted_assignment.range_of_scores;
-                    delete attempted_assignment.num_evaluated;
-                    delete attempted_assignment.userID;
-                    delete attempted_assignment.high_deviation;
+                    delete assignment_attempted.scores;
+                    delete assignment_attempted.range_of_scores;
+                    delete assignment_attempted.num_evaluated;
+                    delete assignment_attempted.userID;
+                    delete assignment_attempted.high_deviation;
 
                 } catch (err) {
                     console.log(err);
@@ -214,6 +214,7 @@ class GradeNewScope extends Contract {
                 console.info('============= END : queryAllAssignments ===========');
                 return JSON.stringify(allResults);
             }
+            console.log("===================================")
         }
     }
 
@@ -241,16 +242,16 @@ class GradeNewScope extends Contract {
                     assignment_attempted = JSON.parse(res.value.value.toString('utf8'));
 
                     // don't show registration $HELLO$ records or assignments which this teacher has already graded
-                    if (assignment_attempted.assignment_content === "$HELLO$" || teacher_ID in attempted_assignment.scores) {
+                    if (assignment_attempted.assignment_content === "$HELLO$" || teacher_ID in assignment_attempted.scores) {
                         continue;
                     }
                     
                     // Essentially just show userID, assignment_id and assignment_content
-                    delete attempted_assignment.final_score;
-                    delete attempted_assignment.scores;                    
-                    delete attempted_assignment.range_of_scores;
-                    delete attempted_assignment.num_evaluated;
-                    delete attempted_assignment.high_deviation;
+                    delete assignment_attempted.final_score;
+                    delete assignment_attempted.scores;                    
+                    delete assignment_attempted.range_of_scores;
+                    delete assignment_attempted.num_evaluated;
+                    delete assignment_attempted.high_deviation;
 
                 } catch (err) {
                     console.log(err);
@@ -262,7 +263,7 @@ class GradeNewScope extends Contract {
             if (res.done) {
                 await iterator.close();
                 console.info(allResults);
-                console.info('============= END : queryAllAssignments ===========');
+                console.info('============= END : teacherQueryUngraded ===========');
                 return JSON.stringify(allResults);
             }
         }

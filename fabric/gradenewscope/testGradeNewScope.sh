@@ -40,11 +40,11 @@ node query.js queryAssignment student2 1
 node invoke.js submitAssignment student1 2 content1
 
 # teachers again submit grades
-node invoke.js submitScore teacher1 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 3 87
-node invoke.js submitScore teacher2 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 3 75
-node invoke.js submitScore teacher3 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 3 98
-node invoke.js submitScore teacher4 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 3 24
-node invoke.js submitScore teacher5 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 3 53
+node invoke.js submitScore teacher1 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 87
+node invoke.js submitScore teacher2 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 75
+node invoke.js submitScore teacher3 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 98
+node invoke.js submitScore teacher4 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 24
+node invoke.js submitScore teacher5 "x509::/OU=client+OU=org1+OU=department1/CN=student1::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com" 2 53
 
 # student queries all assignments they have submitted in the past
 node query.js queryAllAssignments student1

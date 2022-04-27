@@ -45,7 +45,6 @@ async function main() {
         const contract = network.getContract('gradenewscope');
 
         if (choice === 'queryAssignment') {
-            console.log("hello");
             const result = await contract.evaluateTransaction('queryAssignment', assignment_id);
             console.log(`Result is: ${result.toString()}`);
         } else if (choice === 'queryAllAssignments') {
