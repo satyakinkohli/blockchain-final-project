@@ -22,10 +22,9 @@ let teacher3_email;
 let teacher4_email;
 let teacher5_email;
 
+class GradeNewScope extends Contract {
 
-class FabChat extends Contract {
-
-    async initLedger(ctx,teacher1, teacher2, teacher3, teacher4, teacher5) {
+    async initLedger(ctx, teacher1, teacher2, teacher3, teacher4, teacher5) {
         console.info('============= START : Initialize Ledger ===========');
 
         teacher1_email = teacher1;
@@ -59,7 +58,6 @@ class FabChat extends Contract {
                         users.push(attempted_assignment.userID);
                     }
 
-
                 } catch (err) {
                     console.log(err);
                     assignment_attempted = res.value.value.toString('utf8');
@@ -86,12 +84,12 @@ class FabChat extends Contract {
         console.log(`assignment_id : ${assignment_id}`);
 	    console.log(`assignment_content : ${assignment_content}`);
         console.log(`userID  : ${userID}`);
-
-        combination_id = string(assignment_id).concat(" ", string(userID));
+        
+        let combination_id;
+        combination_id = (assignment_id.toString()).concat("-", userID.toString());
 
         if (assign_combinations.includes(combination_id)) {
-
-            throw new Error ("Combination_id : ${combination_id} already submitted")
+            throw new Error (`Combination_id : ${combination_id} already submitted`)
         }
 
         const scores = {}; // Dictionary to hold scores given by each teacher
@@ -100,7 +98,6 @@ class FabChat extends Contract {
         const num_evaluated = 0; // Counter tracking how many teachers have evaluated this assignment for this student, run some code when counter reaches max_teachers
         const high_deviation = null;
         
-
         const attempted_assignment = {
             assignment_id,
             assignment_content,
@@ -110,7 +107,6 @@ class FabChat extends Contract {
             high_deviation,
             final_score,
             userID
-            
         };
 
         // // if new user, add user to users array
@@ -121,7 +117,6 @@ class FabChat extends Contract {
 
         assign_combinations.push(combination_id);
         
-
         await ctx.stub.putState(combination_id.toString(), Buffer.from(JSON.stringify(attempted_assignment)));
         console.info('============= END : submitAssignment ===========');
     }
@@ -132,20 +127,22 @@ class FabChat extends Contract {
 
     async queryAssignment(ctx, assignment_id) {
         console.info('============= START : queryAssignment ===========');
-        console.log(`assignment_id: ${assignment_id}`);
-        console.log(`userID  : ${userID}`);
-
         let cid = new ClientIdentity(ctx.stub);
-        let userID = cid.getID();
-        
-        combination_id = string(assignment_id).concat(" ", string(userID));
+        let tempUserID = cid.getID();
 
-        const attemped_assignmentAsBytes = await ctx.stub.getState(combination_id); // get the assignment from chaincode state
-        if (!attempted_assignmentAsBytes || attemped_assignmentAsBytes.length === 0) {
+        console.log(`assignment_id: ${assignment_id}`);
+        console.log(`userID  : ${tempUserID}`);
+
+        let combination_id;
+        combination_id = (assignment_id.toString()).concat("-", tempUserID.toString());
+
+        const attempted_assignmentAsBytes = await ctx.stub.getState(combination_id); // get the assignment from chaincode state
+        if (!(attempted_assignmentAsBytes) || attempted_assignmentAsBytes.length === 0) {
             throw new Error(`${attempted_assignment} does not exist`);
         }
+        
         let attempted_assignment;
-        attempted_assignment = JSON.parse(attemped_assignmentAsBytes.toString());
+        attempted_assignment = JSON.parse(attempted_assignmentAsBytes.toString());
 
         if (attempted_assignment.num_evaluated < total_teachers){
             throw new Error('Not available yet');
@@ -157,7 +154,6 @@ class FabChat extends Contract {
         }
 
         // no need to show these fields anyway
-        
         delete attempted_assignment.scores;
         delete attempted_assignment.range_of_scores;
         delete attempted_assignment.num_evaluated;
@@ -174,7 +170,7 @@ class FabChat extends Contract {
         console.info('============= START : queryAllAssignments ===========');
 
         let cid = new ClientIdentity(ctx.stub);
-        let userID = cid.getID();
+        let tempUserID = cid.getID();
 
         const startKey = '0';
         const endKey = '99999';
@@ -194,7 +190,7 @@ class FabChat extends Contract {
                     assignment_attempted = JSON.parse(res.value.value.toString('utf8'));
 
                     // don't show registration $HELLO$ records or other students assignments or assignments where grading has not been finished yet
-                    if (assignment_attempted.assignment_content === "$HELLO$" || assignment_attempted.userID != userID || assignment_attempted.num_evaluated < total_teachers) {
+                    if (assignment_attempted.assignment_content === "$HELLO$" || assignment_attempted.userID != tempUserID || assignment_attempted.num_evaluated < total_teachers) {
                         continue;
                     }
 
@@ -209,6 +205,7 @@ class FabChat extends Contract {
                     console.log(err);
                     assignment_attempted = res.value.value.toString('utf8');
                 }
+
                 allResults.push({Key, assignment_attempted});
             }
             if (res.done) {
@@ -221,7 +218,6 @@ class FabChat extends Contract {
     }
 
     async teacherQueryUngraded(ctx){
-
         console.info('============= START : teacherQueryUngraded ===========');
 
         let cid = new ClientIdentity(ctx.stub);
@@ -249,7 +245,6 @@ class FabChat extends Contract {
                         continue;
                     }
                     
-
                     // Essentially just show userID, assignment_id and assignment_content
                     delete attempted_assignment.final_score;
                     delete attempted_assignment.scores;                    
@@ -261,6 +256,7 @@ class FabChat extends Contract {
                     console.log(err);
                     assignment_attempted = res.value.value.toString('utf8');
                 }
+
                 allResults.push({Key, assignment_attempted});
             }
             if (res.done) {
@@ -270,53 +266,45 @@ class FabChat extends Contract {
                 return JSON.stringify(allResults);
             }
         }
-
-
     }
 
 
     async submitScore(ctx, student_id, assignment_id, marks){
-	console.info('============= START : submitScore ===========');
-	
-	let cid = new ClientIdentity(ctx.stub);
-    let teacher_ID = cid.getID();
+        console.info('============= START : submitScore ===========');
+        
+        let cid = new ClientIdentity(ctx.stub);
+        let teacher_ID = cid.getID();
 
-    combination_id = string(assignment_id).concat(" ", string(student_id));
+        let combination_id;
+        combination_id = (assignment_id.toString()).concat("-", (student_id.toString()));
 
-	const attempted_assignmentAsBytes = await ctx.stub.getState(combination_id); // get the attempted_assignment from chaincode state
-        if (!attempted_assignmentAsBytes || attempted_assignmentAsBytes.length === 0) {
-            throw new Error(`${combination_id} does not exist`);
-        }
+        // get the attempted_assignment from chaincode state
+        const attempted_assignmentAsBytes = await ctx.stub.getState(combination_id);
+            if (!(attempted_assignmentAsBytes) || attempted_assignmentAsBytes.length === 0) {
+                throw new Error(`${combination_id} does not exist`);
+            }
         const attempted_assignment = JSON.parse(attempted_assignmentAsBytes.toString());
 
+        //Score can only be submitted if the teacher hasn't already submitted the score before
+        if (!(teacher_ID in attempted_assignment.scores)) {
+            attempted_assignment.scores[teacher_ID] = marks;
+            attempted_assignment.num_evaluated += 1;
 
-	//Score can only be submitted if the teacher hasn't already submitted the score before
+            if (attempted_assignment.num_evaluated == total_teachers){
+                let scores_list;
+                scores_list = Object.values(attempted_assignment.scores);
+                attempted_assignment.range_of_scores = Math.max(scores_list) - Math.min(scores_list);
 
-	if (!(teacher_id in attempted_assignment.scores)) {
-
-        attempted_assignment.scores[teacher_ID] = marks;
-        attempted_assignment.num_evaluated += 1;
-
-        if (attempted_assignment.num_evaluated == total_teachers){
-
-            scores_list = Object.values(attempted_assignment.scores);
-            attempted_assignment.range_of_scores = Math.max(score_list) - Math.min(score_list);
-
-            scores_list.sort()
-            attempted_assignment.final_score = scores_list[2]
+                scores_list.sort()
+                attempted_assignment.final_score = scores_list[2]
+            }
+        } else {
+            throw new Error(`Teacher has already graded this assignment for this student!`);
         }
-
-    }
-
-	else {
-            throw new Error(`Cannot propose change!`);
+        
+        await ctx.stub.putState(combination_id, Buffer.from(JSON.stringify(attempted_assignment)));
+            console.info('============= END : submitScore ===========');
         }
-	
-	await ctx.stub.putState(combination_id, Buffer.from(JSON.stringify(attempted_assignment)));
-        console.info('============= END : submitScore ===========');
-
-    }
-    
 }
 
-module.exports = FabChat;
+module.exports = GradeNewScope;

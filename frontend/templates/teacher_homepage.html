@@ -7,6 +7,37 @@
     <title>Teacher Homepage</title>
 </head>
 <body>
-    
+    <div>
+        <p>Hello, {{username}}</p>
+    </div>
+    <div>
+        <form action="/teacher_home" id="submit_grade" name="submit_answer" method="post">
+            <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}}">
+            <label for="testID">Test ID:</label>
+            <input style="border-radius: 0px;" type="text" id="test_id" name="test_id" /><br /><br />
+            <label for="studentID">Student ID:</label>
+            <input style="border-radius: 0px;" type="text" id="student_id" name="student_id" /><br /><br />
+            <label for="teacherGrade">Grade:</label>
+            <input style="border-radius: 0px;" type="text" id="teacher_grade" name="teacher_grade" /><br /><br />
+            <input style="border-radius: 10px; font-size: large;"
+            type="submit" name="teacher_submit" value="Submit Grade" />
+        </form>
+    </div>
+    <div>
+        <form action="/teacher_home" id="query_assignment_grade" name="query_assignment_grade" method="post">
+            <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}"}>
+            <label for="testID">Test ID:</label>
+            <input style="border-radius: 0px;" type="text" id="test_id" name="test_id" /><br /><br />
+            <input style="border-radius: 10px; font-size: large;"
+            type="submit" name="teacher_submit" value="Query Graded Assignment" />
+        </form>
+    </div>
+    <div>
+        <form action="/teacher_home" id="query_all_assignments" name="query_all_assignments" method="post">
+            <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}}">
+            <input style="border-radius: 10px; font-size: large;"
+            type="submit" name="teacher_submit" value="Query All Graded Assignments" />
+        </form>
+    </div>
 </body>
 </html>

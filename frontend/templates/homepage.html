@@ -38,6 +38,16 @@
 				<div>
 					<div style="margin-top: -200px">
 						<h2><u>GradeNewScope</u></h2>
+						{% with messages= get_flashed_messages()%}
+						{% if messages %}
+							{% for message in messages%}
+							<div class="alert alert-danger alert-dismissible" role="alert">
+								<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+								<strong>{{message}}</strong>
+							</div>
+							{% endfor %}
+						{% endif %}
+						{% endwith %}	
 					</div>
 					<div style="font-size: large; position: absolute; margin-top: 100px">
 						<form action="" method="post">

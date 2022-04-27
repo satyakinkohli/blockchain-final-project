@@ -11,20 +11,16 @@ const path = require('path');
 const ccpPath = path.resolve(__dirname, '..', '..', 'basic-network', 'connection.json');
 const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
-let assignment_id
-let user;
+let choice, user, assignment_id;
 
 process.argv.forEach(function (val, index, array) {
-    // console.log(index + ': ' + val);
     choice = array[2];
     user = array[3];
     assignment_id = array[4]
-
 });
 
 async function main() {
     try {
-
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
@@ -46,23 +42,19 @@ async function main() {
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('fabchat');
+        const contract = network.getContract('gradenewscope');
 
-        // Evaluate the specified transaction.
-        // queryListing transaction - requires 1 argument, ex: ('queryListing', 'Listing0')
-        // queryAllListings transaction - requires no arguments, ex: ('queryAllListings')
-        if (choice === "queryAssignment") {
-            const result = await contract.evaluateTransaction('queryAssignment, assignment_id');
+        if (choice === 'queryAssignment') {
+            console.log("hello");
+            const result = await contract.evaluateTransaction('queryAssignment', assignment_id);
             console.log(`Result is: ${result.toString()}`);
-        } else if (choice == "queryAllAssignments") {
+        } else if (choice === 'queryAllAssignments') {
             const result = await contract.evaluateTransaction('queryAllAssignments');
             console.log(`Result is: ${result.toString()}`);
-        } else if (choice == "teacherQueryUngraded") {
+        } else if (choice === 'teacherQueryUngraded') {
             const result = await contract.evaluateTransaction('teacherQueryUngraded');
             console.log(`Result is: ${result.toString()}`);
-        }
-
-        else {
+        } else {
             console.log(`Choice ${choice} not valid`);  
         }
 

@@ -59,12 +59,12 @@ async function main() {
         console.log(`Successfully registered and enrolled admin user ${user} and imported it into the wallet`);
 
 
-        // Get the network (channel) our contract is deployed to.
-        const network = await gateway.getNetwork('mychannel');
-        // Get the contract from the network.
-        const contract = network.getContract('gradenewscope');
-        await contract.submitTransaction('putBalance',user);
-        await gateway.disconnect();
+        // // Get the network (channel) our contract is deployed to.
+        // const network = await gateway.getNetwork('mychannel');
+        // // Get the contract from the network.
+        // const contract = network.getContract('gradenewscope');
+        // await contract.submitTransaction('putBalance',user);
+        // await gateway.disconnect();
             
 
     } catch (error) {

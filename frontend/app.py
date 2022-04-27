@@ -1,10 +1,11 @@
 ##### IMPORTS #####
 
-from flask import Flask, request, render_template, redirect, url_for, session, flash
+from flask import Flask, request, render_template, redirect, url_for, session, flash, get_flashed_messages
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 import subprocess
 from functools import wraps
 import json
+from numpy import var
 import utils
 
 ##### GLOBAL VARIABLES #####
@@ -22,10 +23,15 @@ app.config['SECRET_KEY'] = "gradenewscope"
 # student_dict maps a student_email to student_username, student_password and the
 # wallet created for them
 student_dict = {}
-# teacherUsernames contains the list of usernames of all teachers which exist on our portal
-teacherUsernames = []
-# teacherEmails contains the list of emails of all teachers which exist on our portal
-teacherEmails = []
+# teacher_dict maps a student_email to student_username, student_password and the
+# wallet created for them
+teacher_dict = {
+    'teacher@gmail.com': {
+        'uname': 'teacher',
+        'pwd': 'teacherpwd',
+        'wallet': 'teacher@gmail.com'
+    }
+}
 # DEBUG should be true when app is in development server
 DEBUG = True
 # ???
@@ -34,7 +40,7 @@ ACCESS = {
     'teacher': 1
 }
 # location of local hyperledger fabric folder
-FABRIC_DIR = "/Users/satyakinkohli/Desktop/Ashoka/Blockchain/blockchain-final-project/fabric-samples/GradeNewScope/javascript"
+FABRIC_DIR = "/Users/satyakinkohli/Desktop/Ashoka/Blockchain/blockchain-final-project/fabric/gradenewscope/javascript"
 # location of local node executable
 NODE_PATH = "/usr/local/bin/node"
 
@@ -54,6 +60,15 @@ def login_register_post():
         if request.form['email'] in student_dict and student_dict[request.form['email']]['pwd'] == request.form['passwd']:
             session.pop('email', None)
             session['email'] = request.form['email']
+            session.pop('uname', None)
+            session['uname'] = request.form['uname']
+            login_user(User(request.form['email']))
+            return redirect(user_type(request.form['email']))
+        elif request.form['email'] in teacher_dict and teacher_dict[request.form['email']]['pwd'] == request.form['passwd']:
+            session.pop('email', None)
+            session['email'] = request.form['email']
+            session.pop('uname', None)
+            session['uname'] = request.form['uname']
             login_user(User(request.form['email']))
             return redirect(user_type(request.form['email']))
         else:
@@ -90,7 +105,7 @@ def handle_setup(form_data):
         }
         # registerUser function runs the registerUser.js and makes a physical wallet
         if registerUser(student_dict[student_email]['wallet']) is not True:
-            student_dict.pop(student_email)
+            # student_dict.pop(student_email)
             return "failure"
         # utils.write_file(db_path, json.dumps(student_dict))
         return "success"
@@ -100,6 +115,8 @@ def handle_setup(form_data):
 def registerUser(user):
     output = "None"
 
+    print(student_dict)
+
     try:
         #subprocess.call("cd "+FABRIC_DIR,shell=True)
         output = subprocess.check_output(
@@ -108,7 +125,7 @@ def registerUser(user):
         pass
 
     if DEBUG:
-        print(' '.join(output))
+        print(''.join(output))
 
     if output != "None" and output[len(output) - 1] == "wallet":
         return True
@@ -122,18 +139,18 @@ class User(UserMixin):
         self.id = id
         if id in student_dict:
             self.access = ACCESS['student']
-        elif id in teacherEmails:
+        elif id in teacher_dict:
             self.access = ACCESS['teacher']
         else:
             print("Error!")
 
 
-# user_type(): returns the url of the page to be redirected to, depending on whether 
+# user_type(): returns the url of the page to be redirected to, depending on whether
 # the user is a student or a teacher
 def user_type(email):
     if email in student_dict:
         return '/student_home'
-    elif email in teacherEmails:
+    elif email in teacher_dict:
         return '/teacher_home'
     else:
         print("Error!")
@@ -160,21 +177,42 @@ def requires_access_level(access_level):
 
 
 # student_home(): renders the student homepage
-@app.route('/student_home')
+@app.route('/student_home', methods=['GET', 'POST'])
 @login_required
 @requires_access_level(ACCESS['student'])
 def student_home():
-    flash('' + session['email'])
-    return render_template('student_homepage.html')
+    if request.method == 'POST':
+        flash('' + session['uname'])
+        if request.form['student_submit'] == 'Submit Answer':
+            print("Submit Answer")
+        elif request.form['student_submit'] == 'Query Assignment':
+            print("Query Assignment")
+        else:
+            print("Query All Assignments")
+        print(request.form['student_id'])
+        return render_template('student_homepage.html')
+    else:
+        return render_template('student_homepage.html', username=session['uname'], email=session['email'])
 
 
 # teacher_home(): renders the teacher homepage
-@app.route('/teacher_home')
+@app.route('/teacher_home', methods=['GET', 'POST'])
 @login_required
 @requires_access_level(ACCESS['teacher'])
 def teacher_home():
-    flash('' + session['email'])
-    return render_template('teacher_homepage.html')
+    if request.method == 'POST':
+        flash('' + session['uname'])
+        if request.form['teacher_submit'] == 'Submit Grade':
+            print("Submit Grade")
+        elif request.form['teacher_submit'] == 'Query Graded Assignment':
+            print("Query Graded Assignment")
+        else:
+            print("Query All Graded Assignments")
+        print(request.form['teacher_id'])
+        return render_template('teacher_homepage.html')
+    else:
+        print(session['uname'])
+        return render_template('teacher_homepage.html', username=session['uname'], email=session['email'])
 
 
 if __name__ == "__main__":

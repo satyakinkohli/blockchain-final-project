@@ -14,17 +14,18 @@ const ccp = JSON.parse(ccpJSON);
 let user, choice, argX, argY, argZ;
 
 process.argv.forEach(function (val, index, array) {
-    // console.log(index + ': ' + val);
     choice = array[2];
     user = array[3];
-    argX = array[4];    
+    // can be assignment_id, student_id
+    argX = array[4];  
+    // can be assignment_content, assignment_id
     argY = array[5];
+    // can be null, marks
     argZ = array[6];
 });
 
 async function main() {
     try {
-
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
@@ -46,21 +47,15 @@ async function main() {
         const network = await gateway.getNetwork('mychannel');
 
         // Get the contract from the network.
-        const contract = network.getContract('fabchat');
-
-        // Submit the specified transaction.
-        // createListing transaction - requires 5 argument, ex: ('createMsg', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
-        // flagMsg transaction - requires 2 args , ex: ('flagMsg', 'CAR10', 'Dave')
+        const contract = network.getContract('gradenewscope');
+        
         if (choice === 'submitAssignment') {
             await contract.submitTransaction('submitAssignment', argX, argY);
-            console.log(`${choice} Transaction has been submitted`);
-
+            console.log(`${choice}: Transaction has been submitted`);
         } else if (choice === 'submitScore') {
-            await contract.submitTransaction('changeProposal',argX, argY, argZ);
-            console.log(`${choice} Transaction has been submitted`);
-        } 
-        
-        else {
+            await contract.submitTransaction('submitScore', argX, argY, argZ);
+            console.log(`${choice}: Transaction has been submitted`);
+        } else {
             console.log(`${choice} is invalid!`);
         }
 
