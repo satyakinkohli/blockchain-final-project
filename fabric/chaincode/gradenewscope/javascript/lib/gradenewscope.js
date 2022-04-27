@@ -309,7 +309,7 @@ class GradeNewScope extends Contract {
             }
         } else {
             throw new Error(`Teacher has already graded this assignment for this student!`);
-        }
+        } 
         
         await ctx.stub.putState(combination_id, Buffer.from(JSON.stringify(attempted_assignment)));
             console.info('============= END : submitScore ===========');
