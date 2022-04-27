@@ -10,8 +10,8 @@
     <div>
         <p>Hello, {{username}}</p>
     </div>
-    <div>
-        <center> 
+
+    <div style="text-align: center">
         <form action="/teacher_home" id="submit_grade" name="submit_answer" method="post">
             <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}}">
             <label for="testID">Test ID:</label>
@@ -25,11 +25,9 @@
         </form>
         <br>
         <br>
-        
-    </center>
     </div>
-    <div>
-    <center>
+
+    <div style="text-align: center">
         <form action="/teacher_home" id="query_assignment_grade" name="query_assignment_grade" method="post">
             <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}"}>
             <label for="testID">Test ID:</label>
@@ -39,16 +37,14 @@
         </form>
         <br>
         <br>
-    </center>
     </div>
-    <div>
-    <center>
+
+    <div style="text-align: center">
         <form action="/teacher_home" id="query_all_assignments" name="query_all_assignments" method="post">
             <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}}">
             <input style="border-radius: 10px; font-size: large;"
             type="submit" name="teacher_submit" value="Query All Graded Assignments" />
         </form>
-    </center>
     </div>
 </body>
 </html>

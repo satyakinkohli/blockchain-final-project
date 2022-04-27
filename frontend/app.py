@@ -49,9 +49,8 @@ adminEnrolled = False
 
 ##### FUNCTIONS #####
 
+
 # homepage() - renders the homepage
-
-
 @app.route("/")
 def homepage():
     return render_template("homepage.html")
@@ -87,7 +86,7 @@ def login_register_post():
             flash('Registration failed! You are already registered', 'error')
             return redirect('/')
     else:
-        print("Error! - 1")
+        pass
 
 
 # handle_setup() - registers the student in the gradenewscope portal, part I
@@ -96,10 +95,10 @@ def handle_setup(form_data):
     student_username = form_data['uname']
     student_pwd = form_data['passwd']
 
-    # registerAdmin function runs registerAdmin.js and makes a physical wallet for the admin
+    # fabric_registerAdmin function runs registerAdmin.js and makes a physical wallet for the admin
     global adminEnrolled
     if not adminEnrolled:
-        result = registerAdmin()
+        result = fabric_registerAdmin()
         if result is False:
             return "failure"
     adminEnrolled = True
@@ -115,16 +114,16 @@ def handle_setup(form_data):
             "pwd": student_pwd,
             "wallet": student_email
         }
-        # registerUser function runs registerUser.js and makes a physical wallet for the student
-        if registerUser(student_dict[student_email]['wallet']) is not True:
+        # fabric_registerUser function runs registerUser.js and makes a physical wallet for the student
+        if fabric_registerUser(student_dict[student_email]['wallet']) is not True:
             student_dict.pop(student_email)
             return "failure"
         # utils.write_file(db_path, json.dumps(student_dict))
         return "success"
 
 
-# registerUser() - registers the student in the gradenewscope portal, part II
-def registerUser(user):
+# fabric_registerUser() - registers the student in the gradenewscope portal, part II
+def fabric_registerUser(user):
     registerUserStatus = "None"
 
     try:
@@ -142,8 +141,8 @@ def registerUser(user):
         return False
 
 
-# registerAdmin() - registers the admin in the gradenewscope portal
-def registerAdmin():
+# fabric_registerAdmin() - registers the admin in the gradenewscope portal
+def fabric_registerAdmin():
     adminEnrollStatus = "None"
 
     try:
@@ -170,7 +169,6 @@ class User(UserMixin):
         elif id in teacher_dict:
             self.access = ACCESS['teacher']
         else:
-            # print("Error! - 2")
             pass
 
 
@@ -182,7 +180,7 @@ def user_type(email):
     elif email in teacher_dict:
         return '/teacher_home'
     else:
-        print("Error! - 3")
+        pass
 
 
 # load_user() - returns the User object given the user_id (the email in our case)
@@ -211,15 +209,38 @@ def requires_access_level(access_level):
 @requires_access_level(ACCESS['student'])
 def student_home():
     if request.method == 'POST':
-        flash('' + session['uname'])
-        if request.form['student_submit'] == 'Submit Answer':
-            print("Submit Answer")
+        var = {}
+        var.clear()
+        var = {'email': request.form['student_id'], 'username': student_dict[request.form['student_id']]['uname']}
+        if request.form['student_submit'] == 'Submit Assignment':
+            assignment_id = request.form['assignment_id']
+            assignment_content = request.form['assignment_content']
+            submitResult = fabric_submitAssignment(
+                var['email'], assignment_id, assignment_content)
+            if submitResult is True:
+                var['submit_status'] = "You have submitted your assignment successfully!"
+            else:
+                var['submit_status'] = "Failed to submit the assignment. You might be attempting to submit the assignment again, and re-submissions are something we simply don't believe in!"
         elif request.form['student_submit'] == 'Query Assignment':
-            print("Query Assignment")
+            assignment_id = request.form['assignment_id']
+            # print("Query Assignment")
+            queryResult, queryOutput = fabric_queryAssignment(
+                var['email'], assignment_id)
+            if queryResult is True:
+                var['queryOutput'] = queryOutput
+            else:
+                var['queryOutput'] = "Query Unsucessful. Your assignment has not been evaluated yet, maybe wait a bit more?"
         else:
-            print("Query All Assignments")
-        print(request.form['student_id'])
-        return render_template('student_homepage.html')
+            # print("Query All Assignments")
+            queryAllResult, queryAllOutput = fabric_queryAllAssignments(var['email'])
+            if queryAllResult is True:
+                if queryAllOutput == "None":
+                    var['queryAllOutput'] = "No assignment has been evaluated until now."
+                else:
+                    var['queryAllOutput'] = queryAllOutput
+            else:
+                var['queryAllOutput'] = "QueryAll Unsucessful."
+        return render_template('student_homepage.html', **var)
     else:
         return render_template('student_homepage.html', username=session['uname'], email=session['email'])
 
@@ -232,16 +253,80 @@ def teacher_home():
     if request.method == 'POST':
         flash('' + session['uname'])
         if request.form['teacher_submit'] == 'Submit Grade':
-            print("Submit Grade")
+            # print("Submit Grade")
+            pass
         elif request.form['teacher_submit'] == 'Query Graded Assignment':
-            print("Query Graded Assignment")
+            # print("Query Graded Assignment")
+            pass
         else:
-            print("Query All Graded Assignments")
-        print(request.form['teacher_id'])
-        return render_template('teacher_homepage.html')
-    else:
-        print(session['uname'])
+            # print("Query All Graded Assignments")
+            pass
         return render_template('teacher_homepage.html', username=session['uname'], email=session['email'])
+    else:
+        return render_template('teacher_homepage.html', username=session['uname'], email=session['email'])
+
+
+# student submits their assignment
+def fabric_submitAssignment(email, assignment_id, assignment_content):
+    submitAssignmentStatus = "None"
+
+    try:
+        submitAssignmentStatus = subprocess.check_output(
+            [NODE_PATH, FABRIC_DIR + "/invoke.js", "submitAssignment", email, assignment_id, assignment_content], cwd=FABRIC_DIR).decode().split()
+    except:
+        pass
+
+    if DEBUG:
+        print(' '.join(submitAssignmentStatus))
+
+    if submitAssignmentStatus == "None":
+        return False
+    elif submitAssignmentStatus[len(submitAssignmentStatus) - 1] != "submitted":
+        return False
+    else:
+        return True
+
+
+# student queries their assignment
+def fabric_queryAssignment(email, assignment_id):
+    queryAssignmentStatus = "None"
+
+    try:
+        queryAssignmentStatus = subprocess.check_output(
+            [NODE_PATH, FABRIC_DIR + "/query.js", "queryAssignment", email, assignment_id], cwd=FABRIC_DIR).decode().split()
+    except:
+        pass
+
+    properAnswer = "some"
+
+    if DEBUG:
+        print(' '.join(queryAssignmentStatus))
+
+    if queryAssignmentStatus == "None":
+        return False, ""
+    elif queryAssignmentStatus[len(queryAssignmentStatus) - 1] != "successful":
+        return False, ""
+    else:
+        return True, properAnswer
+
+
+# student queries all their assignment
+def fabric_queryAllAssignments(email):
+    queryAllAssignmentsStatus = "None"
+
+    try:
+        queryAllAssignmentsStatus = subprocess.check_output(
+            [NODE_PATH, FABRIC_DIR + "/query.js", "queryAllAssignments", email], cwd=FABRIC_DIR).decode().split()
+    except:
+        pass
+
+    if DEBUG:
+        print(' '.join(queryAllAssignmentsStatus))
+
+    if queryAllAssignmentsStatus == "None":
+        return False, ""
+    else:
+        return True, queryAllAssignmentsStatus
 
 
 if __name__ == "__main__":

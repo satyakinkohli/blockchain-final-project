@@ -46,13 +46,13 @@ async function main() {
 
         if (choice === 'queryAssignment') {
             const result = await contract.evaluateTransaction('queryAssignment', assignment_id);
-            console.log(`Result is: ${result.toString()}`);
+            console.log(`Result is: ${result.toString()}. Query successful`);
         } else if (choice === 'queryAllAssignments') {
             const result = await contract.evaluateTransaction('queryAllAssignments');
-            console.log(`Result is: ${result.toString()}`);
+            console.log(`Result is: ${result.toString()}. Query successful`);
         } else if (choice === 'teacherQueryUngraded') {
             const result = await contract.evaluateTransaction('teacherQueryUngraded');
-            console.log(`Result is: ${result.toString()}`);
+            console.log(`Result is: ${result.toString()}. Query successful`);
         } else {
             console.log(`Choice ${choice} not valid`);  
         }

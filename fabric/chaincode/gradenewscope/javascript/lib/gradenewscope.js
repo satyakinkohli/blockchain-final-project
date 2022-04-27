@@ -299,13 +299,11 @@ class GradeNewScope extends Contract {
                 attempted_assignment.range_of_scores = max - min;
                 attempted_assignment.final_score = scores_list[2]
                 
-                if (attempted_assignment.range_of_scores > 10){
-                    attempted_assignment.high_deviation = True;
+                if (attempted_assignment.range_of_scores > 10) {
+                    attempted_assignment.high_deviation = true;
+                } else {
+                    attempted_assignment.high_deviation = false;
                 }
-                else {
-                    attempted_assignment.high_deviation = False;
-                }
-                
             }
         } else {
             throw new Error(`Teacher has already graded this assignment for this student!`);
