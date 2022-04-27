@@ -1,5 +1,6 @@
 ##### IMPORTS #####
 
+from turtle import clear
 from flask import Flask, request, render_template, redirect, url_for, session, flash, get_flashed_messages
 from flask_login import LoginManager, login_user, logout_user, login_required, UserMixin
 import subprocess
@@ -43,11 +44,14 @@ ACCESS = {
 FABRIC_DIR = "/Users/satyakinkohli/Desktop/Ashoka/Blockchain/blockchain-final-project/fabric/gradenewscope/javascript"
 # location of local node executable
 NODE_PATH = "/usr/local/bin/node"
-
+# check if admin has been enrolled or not
+adminEnrolled = False
 
 ##### FUNCTIONS #####
 
 # homepage() - renders the homepage
+
+
 @app.route("/")
 def homepage():
     return render_template("homepage.html")
@@ -83,7 +87,7 @@ def login_register_post():
             flash('Registration failed! You are already registered', 'error')
             return redirect('/')
     else:
-        print("Error!")
+        print("Error! - 1")
 
 
 # handle_setup() - registers the student in the gradenewscope portal, part I
@@ -91,6 +95,14 @@ def handle_setup(form_data):
     student_email = form_data['email']
     student_username = form_data['uname']
     student_pwd = form_data['passwd']
+
+    # registerAdmin function runs registerAdmin.js and makes a physical wallet for the admin
+    global adminEnrolled
+    if not adminEnrolled:
+        result = registerAdmin()
+        if result is False:
+            return "failure"
+    adminEnrolled = True
 
     # if user already exists OR if no more wallets (max: 50) available, fail
     if (student_email in student_dict) or (len(student_dict) > 50):
@@ -103,9 +115,9 @@ def handle_setup(form_data):
             "pwd": student_pwd,
             "wallet": student_email
         }
-        # registerUser function runs the registerUser.js and makes a physical wallet
+        # registerUser function runs registerUser.js and makes a physical wallet for the student
         if registerUser(student_dict[student_email]['wallet']) is not True:
-            # student_dict.pop(student_email)
+            student_dict.pop(student_email)
             return "failure"
         # utils.write_file(db_path, json.dumps(student_dict))
         return "success"
@@ -113,21 +125,37 @@ def handle_setup(form_data):
 
 # registerUser() - registers the student in the gradenewscope portal, part II
 def registerUser(user):
-    output = "None"
-
-    print(student_dict)
+    registerUserStatus = "None"
 
     try:
-        #subprocess.call("cd "+FABRIC_DIR,shell=True)
-        output = subprocess.check_output(
+        registerUserStatus = subprocess.check_output(
             [NODE_PATH, FABRIC_DIR + "/registerUser.js", user], cwd=FABRIC_DIR).decode().split()
     except:
         pass
 
     if DEBUG:
-        print(''.join(output))
+        print(' '.join(registerUserStatus))
 
-    if output != "None" and output[len(output) - 1] == "wallet":
+    if registerUserStatus != "None" and registerUserStatus[len(registerUserStatus) - 1] == "wallet":
+        return True
+    else:
+        return False
+
+
+# registerAdmin() - registers the admin in the gradenewscope portal
+def registerAdmin():
+    adminEnrollStatus = "None"
+
+    try:
+        adminEnrollStatus = subprocess.check_output(
+            [NODE_PATH, FABRIC_DIR + "/enrollAdmin.js"], cwd=FABRIC_DIR).decode().split()
+    except:
+        pass
+
+    if DEBUG:
+        print(' '.join(adminEnrollStatus))
+
+    if adminEnrollStatus != "None" and adminEnrollStatus[len(adminEnrollStatus) - 1] == "wallet":
         return True
     else:
         return False
@@ -142,7 +170,8 @@ class User(UserMixin):
         elif id in teacher_dict:
             self.access = ACCESS['teacher']
         else:
-            print("Error!")
+            # print("Error! - 2")
+            pass
 
 
 # user_type(): returns the url of the page to be redirected to, depending on whether
@@ -153,7 +182,7 @@ def user_type(email):
     elif email in teacher_dict:
         return '/teacher_home'
     else:
-        print("Error!")
+        print("Error! - 3")
 
 
 # load_user() - returns the User object given the user_id (the email in our case)

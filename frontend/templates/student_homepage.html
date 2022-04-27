@@ -10,8 +10,8 @@
     <div>
         <p>Hello, {{username}}</p>
     </div>
-    <div>
-        <center>
+
+    <div style="text-align: center">
         <form action="/student_home" id="submit_answer" name="submit_answer" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
             <label for="testID">Test ID:</label>
@@ -21,31 +21,24 @@
             <input style="border-radius: 10px; font-size: large;"
             type="submit" name="student_submit" value="Submit Answer" />
         </form>
-    <br>
-    <br>
-    </center>
     </div>
-    <div>
-    <center>
+
+    <div style="text-align: center">
         <form action="/student_home" id="query_assignment" name="query_assignment" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
-            <label for="testID">TestID:</label>
+            <label for="testID">Test ID:</label>
             <input style="border-radius: 0px;" type="text" id="test_id" name="test_id" /><br /><br />
             <input style="border-radius: 10px; font-size: large;"
             type="submit" name="student_submit" value="Query Assignment" />
         </form>
-    <br>
-    <br>
-    </center>
     </div>
-    <div>
-    <center>
+
+    <div style="text-align: center">
         <form action="/student_home" id="query_all_assignments" name="query_all_assignments" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
             <input style="border-radius: 10px; font-size: large;"
             type="submit" name="student_submit" value="Query All Assignments" />
         </form>
-    </center>
     </div>
 </body>
 </html>

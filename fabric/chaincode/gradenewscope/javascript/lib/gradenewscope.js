@@ -291,7 +291,7 @@ class GradeNewScope extends Contract {
             attempted_assignment.scores[teacher_ID] = marks;
             attempted_assignment.num_evaluated += 1;
 
-            if (attempted_assignment.num_evaluated == total_teachers){
+            if (attempted_assignment.num_evaluated == total_teachers) {
                 let scores_list;
                 scores_list = Object.values(attempted_assignment.scores);
                 attempted_assignment.range_of_scores = Math.max(scores_list) - Math.min(scores_list);
