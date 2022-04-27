@@ -206,7 +206,7 @@ class GradeNewScope extends Contract {
                     assignment_attempted = res.value.value.toString('utf8');
                 }
 
-                allResults.push({Key, assignment_attempted});
+                allResults.push(assignment_attempted);
             }
             if (res.done) {
                 await iterator.close();
@@ -258,7 +258,7 @@ class GradeNewScope extends Contract {
                     assignment_attempted = res.value.value.toString('utf8');
                 }
 
-                allResults.push({Key, assignment_attempted});
+                allResults.push(assignment_attempted);
             }
             if (res.done) {
                 await iterator.close();
@@ -298,6 +298,14 @@ class GradeNewScope extends Contract {
                 let min = scores_list[0]
                 attempted_assignment.range_of_scores = max - min;
                 attempted_assignment.final_score = scores_list[2]
+                
+                if (attempted_assignment.range_of_scores > 10){
+                    attempted_assignment.high_deviation = True;
+                }
+                else {
+                    attempted_assignment.high_deviation = False;
+                }
+                
             }
         } else {
             throw new Error(`Teacher has already graded this assignment for this student!`);
