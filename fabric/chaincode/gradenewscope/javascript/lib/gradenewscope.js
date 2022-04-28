@@ -198,10 +198,9 @@ class GradeNewScope extends Contract {
 
                     // no need to show these fields anyway
                     delete assignment_attempted.scores;
-                    delete assignment_attempted.range_of_scores;
                     delete assignment_attempted.num_evaluated;
                     delete assignment_attempted.userID;
-                    delete assignment_attempted.high_deviation;
+
 
                 } catch (err) {
                     console.log(err);
@@ -251,9 +250,8 @@ class GradeNewScope extends Contract {
                     // Essentially just show userID, assignment_id and assignment_content
                     delete assignment_attempted.final_score;
                     delete assignment_attempted.scores;                    
-                    delete assignment_attempted.range_of_scores;
                     delete assignment_attempted.num_evaluated;
-                    delete assignment_attempted.high_deviation;
+                    
 
                 } catch (err) {
                     console.log(err);
