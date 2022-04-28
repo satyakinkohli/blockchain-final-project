@@ -24,7 +24,7 @@ async function main() {
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
         const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
+        //console.log(`Wallet path: ${walletPath}`);
 
         // Check to see if we've already enrolled the user.
         const userExists = await wallet.exists(user);
@@ -46,13 +46,13 @@ async function main() {
 
         if (choice === 'queryAssignment') {
             const result = await contract.evaluateTransaction('queryAssignment', assignment_id);
-            console.log(`Result is: ${result.toString()}. Query successful`);
+            console.log(`${result.toString()}. Query successful`);
         } else if (choice === 'queryAllAssignments') {
             const result = await contract.evaluateTransaction('queryAllAssignments');
-            console.log(`Result is: ${result.toString()}. Query successful`);
+            console.log(`${result.toString()}. Query successful`);
         } else if (choice === 'teacherQueryUngraded') {
             const result = await contract.evaluateTransaction('teacherQueryUngraded');
-            console.log(`Result is: ${result.toString()}. Query successful`);
+            console.log(`${result.toString()}. Query successful`);
         } else {
             console.log(`Choice ${choice} not valid`);  
         }
