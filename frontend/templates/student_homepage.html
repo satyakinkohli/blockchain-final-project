@@ -7,18 +7,24 @@
     <title>Student Homepage</title>
 </head>
 <body style="background-color: black; color: white;">
+
+    <h2 style="color:red; text-align: center;" > GradeNewScope </h2>
     <div>
-        <p>Hello, {{username}}</p>
-    </div>
+        <p style= "text-align:right">Hello, {{username}} </p>
+     </div>
 
     <div>
-        <a href="/">
+        
+        <a href="/" style="float:right">
             <form action="/logout" method="post">
                 Logout
             </form>
         </a> 
+    </p>
     </div>
-
+    <br>
+    <br>
+    <br>
     <div style="text-align: center">
         <form action="/student_home" id="submit_answer" name="submit_answer" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
@@ -26,7 +32,7 @@
             <input style="border-radius: 0px;" type="text" id="assignment_id" name="assignment_id" /><br /><br />
             <label for="studentAnswer">Answers:</label>
             <input style="border-radius: 0px;" type="text" id="assignment_content" name="assignment_content" /><br /><br />
-            <input style="border-radius: 10px; font-size: large;"
+            <input style="border-radius: 10px; font-size: large; background-color:rgb(15, 146, 24);"
             type="submit" name="student_submit" value="Submit Assignment" />
         </form>
     </div>
@@ -42,7 +48,7 @@
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
             <label for="assignmentID">Assignment ID:</label>
             <input style="border-radius: 0px;" type="text" id="assignment_id" name="assignment_id" /><br /><br />
-            <input style="border-radius: 10px; font-size: large;"
+            <input style="border-radius: 10px; font-size: large; background-color:rgb(15, 146, 24);"
             type="submit" name="student_submit" value="Query Assignment" />
         </form>
     </div>
@@ -56,7 +62,7 @@
     <div style="text-align: center">
         <form action="/student_home" id="query_all_assignments" name="query_all_assignments" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
-            <input style="border-radius: 10px; font-size: large;"
+            <input style="border-radius: 10px; font-size: large; background-color:rgb(15, 146, 24);"
             type="submit" name="student_submit" value="Query All Assignments" />
         </form>
     </div>
