@@ -157,10 +157,9 @@ class GradeNewScope extends Contract {
 
         // no need to show these fields anyway
         delete attempted_assignment.scores;
-        delete attempted_assignment.range_of_scores;
         delete attempted_assignment.num_evaluated;
         delete attempted_assignment.userID;
-        delete attempted_assignment.high_deviation;
+
 
         console.log(attempted_assignment);
         console.info('============= END : queryAssignment ===========');
