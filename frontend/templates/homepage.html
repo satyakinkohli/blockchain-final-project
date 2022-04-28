@@ -36,20 +36,10 @@
 		<div class="row">
 			<div class="column">
 				<div>
-					<div style="margin-top: -200px">
-						<h2><u>GradeNewScope</u></h2>
-						{% with messages= get_flashed_messages()%}
-						{% if messages %}
-							{% for message in messages%}
-							<div class="alert alert-danger alert-dismissible" role="alert">
-								<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-								<strong>{{message}}</strong>
-							</div>
-							{% endfor %}
-						{% endif %}
-						{% endwith %}	
+					<div style="margin-top: -250px">
+						<h1 style="color:red; text-align: center;"><u>GradeNewScope</u></h1>
 					</div>
-					<div style="font-size: large; position: absolute; margin-top: 100px">
+					<div style="font-size: large; position: absolute; margin-top: 75px">
 						<form action="" method="post">
 							<label for="email">Email:</label>
 							<input style="border-radius: 0px;" type="text" id="email" name="email" /><br /><br />
@@ -57,11 +47,18 @@
 							<input style="border-radius: 0px;" type="text" id="uname" name="uname" /><br /><br />
 							<label for="passwd">Password:</label>
 							<input style="border-radius: 0px;" type="text" id="passwd" name="passwd" /><br /><br />
-							<input style="border-radius: 10px; font-size: large;"
+							<input style="border-radius: 0px; font-size: large;"
 							type="submit" name="welcomeuser" value="Sign In" />
-							<input style="border-radius: 10px; font-size: large;"
+							<input style="border-radius: 00px; font-size: large;"
 							type="submit" name="welcomeuser" value="Sign Up" />
 						</form>
+						<br>
+						<br>
+						{% if message %}
+						<div class="" style="text-align: left; color: darkorange;">
+							<p>{{message}}</p>
+						</div>
+						{% endif %}
 					</div>
 				</div>
 			</div>

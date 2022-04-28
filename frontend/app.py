@@ -8,6 +8,7 @@ from functools import wraps
 import json
 from numpy import var
 import utils
+import re
 
 ##### GLOBAL VARIABLES #####
 
@@ -48,7 +49,11 @@ adminEnrolled = False
 
 @app.route("/")
 def homepage():
-    return render_template("homepage.html")
+    if session.get('message'):
+        var = {'message': session['message']}
+        return render_template("homepage.html", **var)
+    else:
+        return render_template("homepage.html")
 
 
 # login_register_post() - begins the process of sign in or sign up
@@ -56,6 +61,7 @@ def homepage():
 def login_register_post():
     if request.form['welcomeuser'] == 'Sign In':
         if request.form['email'] in student_dict and student_dict[request.form['email']]['pwd'] == request.form['passwd']:
+            session.pop('message', None)
             session.pop('email', None)
             session['email'] = request.form['email']
             session.pop('uname', None)
@@ -63,20 +69,20 @@ def login_register_post():
             login_user(User(request.form['email']))
             return redirect(user_type(request.form['email']))
         elif request.form['email'] in teacher_dict and teacher_dict[request.form['email']]['pwd'] == request.form['passwd']:
+            session.pop('message', None)
             session.pop('email', None)
             session['email'] = request.form['email']
             session.pop('uname', None)
             session['uname'] = request.form['uname']
-            print("here")
             login_user(User(request.form['email']))
-            print("here too")
             return redirect(user_type(request.form['email']))
         else:
-            flash('Incorrect email/password')
+            session['message'] = "Incorrect email/password"
             return redirect('/')
     elif request.form['welcomeuser'] == 'Sign Up':
         response = handle_setup(request.form)
         if response == "success":
+            session.pop('message', None)
             session.pop('email', None)
             session['email'] = request.form['email']
             session.pop('uname', None)
@@ -84,7 +90,7 @@ def login_register_post():
             login_user(User(request.form['email']))
             return redirect(user_type(request.form['email']))
         else:
-            flash('Registration failed! You are already registered', 'error')
+            session['message'] = "Already registered or, wrong email format"
             return redirect('/')
     else:
         pass
@@ -108,7 +114,7 @@ def handle_setup(form_data):
     if (email in student_dict) or (len(student_dict) > 50):
         return "failure"
     # if teacher already exists OR if there are more than 5 teachers, fail
-    elif (email in teacher_dict) or (len(teacher_dict) > 5):
+    elif (email in teacher_dict) or (len(teacher_dict) >= 5):
         return "failure"
     # else assign the user a wallet
     else:
@@ -249,16 +255,17 @@ def student_home():
                 var['email'], assignment_id)
             if queryAssignmentResult is True:
                 var['queryAssignmentOutput'] = queryAssignmentOutput
+                print(queryAssignmentOutput)
             else:
                 var[
-                    'queryAssignmentOutput'] = "Failed to query the assignment. Either you have not submitted this assignment, or it has not been graded by enough (5) professors yet."
+                    'queryAssignmentOutputAlt'] = "Failed to query the assignment. Either you have not submitted this assignment, or it has not been graded by enough (5) professors yet."
         else:
             queryAllAssignmentsResult, queryAllAssignmentsOutput = fabric_queryAllAssignments(
                 var['email'])
             if queryAllAssignmentsResult is True:
                 var['queryAllAssignmentsOutput'] = queryAllAssignmentsOutput
             else:
-                var['queryAllAssignmentsOutput'] = "No assignment has been evaluated until now"
+                var['queryAllAssignmentsOutputAlt'] = "No assignment has been evaluated until now"
         return render_template('student_homepage.html', **var)
     else:
         return render_template('student_homepage.html', username=session['uname'], email=session['email'])
@@ -277,7 +284,7 @@ def teacher_home():
 
         if request.form['teacher_submit'] == 'Submit Grade':
             assignment_id = request.form['assignment_id']
-            student_id = request.form['student_id']
+            student_id = fixUserID(request.form['student_id'])
             teacher_grade = request.form['teacher_grade']
             submitScoreResult = fabric_submitScore(
                 rav['email'], student_id, assignment_id, teacher_grade)
@@ -288,10 +295,12 @@ def teacher_home():
 
         queryUngradedAssignmentResult, queryUngradedAssignmentOutput = fabric_queryUngradedAssignment(
             rav['email'])
-        if queryUngradedAssignmentResult is True:    
+        if queryUngradedAssignmentResult is True:
+            queryUngradedAssignmentOutput = modfifyUserID(
+                queryUngradedAssignmentOutput)
             rav['queryUngradedAssignmentOutput'] = queryUngradedAssignmentOutput
         else:
-            rav['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
+            rav['queryUngradedAssignmentOutputAlt'] = "There is no assignment for you to grade right now."
 
         return render_template('teacher_homepage.html', **rav)
     else:
@@ -301,11 +310,34 @@ def teacher_home():
                    'username': teacher_dict[session['email']]['uname']}
         queryUngradedAssignmentResult, queryUngradedAssignmentOutput = fabric_queryUngradedAssignment(
             ravtemp['email'])
-        if queryUngradedAssignmentResult is True:    
+        if queryUngradedAssignmentResult is True:
+            queryUngradedAssignmentOutput = modfifyUserID(
+                queryUngradedAssignmentOutput)
             ravtemp['queryUngradedAssignmentOutput'] = queryUngradedAssignmentOutput
         else:
             ravtemp['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
         return render_template('teacher_homepage.html', **ravtemp)
+
+# making userID more intuitive to use
+def modfifyUserID(dictData):
+    for item in dictData:
+        userID = item['userID']
+        endOfEmail = userID.find('@student.com') + 12
+        userID_secondHalf = userID[endOfEmail:]
+        startOfEmail = len("x509::/OU=client+OU=org1+OU=department1/CN=")
+        userID_firstHalf = userID[:startOfEmail]
+        actualUserID = userID[startOfEmail:endOfEmail]
+        item['userID'] = actualUserID
+
+    return dictData
+
+
+# fixing userID to use it for the chaincode
+def fixUserID(userID):
+    userID_firstHalf = "x509::/OU=client+OU=org1+OU=department1/CN="
+    userID_secondHalf = "::/C=US/ST=California/L=San Francisco/O=org1.example.com/CN=ca.org1.example.com"
+    userID = userID_firstHalf + str(userID) + userID_secondHalf
+    return userID
 
 
 # student submits their assignment
@@ -344,7 +376,7 @@ def fabric_queryAssignment(email, assignment_id):
     if DEBUG:
         print(queryAssignmentOutput)
 
-    if queryAssignmentOutput[-10:] != "successful":
+    if queryAssignmentOutput == "None":
         return False, ""
     else:
         return True, format_queryAssignment(queryAssignmentOutput)
@@ -352,9 +384,17 @@ def fabric_queryAssignment(email, assignment_id):
 
 # formats the output of the student queryAssignment
 def format_queryAssignment(string):
-    newString = string[0:-18]
-    list_format = eval(newString)
-    return list_format[0]
+    string = string[:-19]
+    if string.find("true") != -1:
+        sindex = string.find("true")
+        lindex = sindex + 4
+        modString = string[:sindex] + "True" + string[lindex:]
+    else:
+        sindex = string.find("false")
+        lindex = sindex + 5
+        modString = string[:sindex] + "False" + string[lindex:]
+    dictFormat = eval(modString)
+    return dictFormat
 
 
 # student queries all their assignments
@@ -370,6 +410,8 @@ def fabric_queryAllAssignments(email):
     if DEBUG:
         print(queryAllAssignmentsOutput)
 
+    print(queryAllAssignmentsOutput)
+
     if queryAllAssignmentsOutput == "None":
         return False, ""
     else:
@@ -378,9 +420,15 @@ def fabric_queryAllAssignments(email):
 
 # formats the output of the student queryAllAssignments
 def format_queryAllAssignments(string):
-    newString = string[0: -19]
-    list_format = eval(newString)
-    return list_format
+    string = string[:-19]
+    trueResults = [_.start() for _ in re.finditer("true", string)]
+    for index in trueResults:
+        string = string[:index] + "True" + string[index+4:]
+    falseResults = [_.start() for _ in re.finditer("false", string)]
+    for index in falseResults:
+        string = string[:index] + "False" + string[index+5:]
+    listFormat = eval(string)
+    return listFormat
 
 
 # teacher submits an assignment score

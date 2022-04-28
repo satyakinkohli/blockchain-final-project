@@ -1,50 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher Homepage</title>
-</head>
-<body style="background-color: black; color: white;">
-    <h2 style="color:red; text-align: center;" > GradeNewScope </h2>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			table {
+				border: 3px solid white;
+			}
 
-    <div>
-        <p style= "text-align:right">Hello, {{username}}</p>
-    </div>
+			th, td {
+                border: 3px solid white;
+                padding: 8px;
+            }
 
-    <div>
-        <a href="/" style="float:right">
-            <form action="/logout" method="post">
-                Logout
-            </form>
-        </a> 
-    </div>
+            .centerTable {
+                margin-left: auto;
+                margin-right: auto;
+            }
+		</style>
+		<title>Teacher Homepage</title>
+	</head>
+	<body style="background-color: black; color: white">
+        <br>
+        <div>
+			<p style="text-align: right; color: lightgreen">Hello, {{username}}</p>
+		</div>
 
-    {% if queryUngradedAssignmentOutput %}
-    <div>
-        <p>{{queryUngradedAssignmentOutput}}</p>
-    </div>
-    {% endif %}
+		<div>
+			<a href="/" style="float: right">
+				<form action="/logout" method="post">Logout</form>
+			</a>
+		</div>
+        <br>
+		<h2 style="color: red; text-align: center"><u>GradeNewScope</u></h2>
+        <br /><br />
 
-    <div style="text-align: center">
-        <form action="/teacher_home" id="submit_grade" name="submit_answer" method="post">
-            <input type="hidden" id="teacher_id" name="teacher_id" value="{{email}}">
-            <label for="assignmentID">Assignment ID:</label>
-            <input style="border-radius: 0px;" type="text" id="assignment_id" name="assignment_id" /><br /><br />
-            <label for="studentID">Student ID:</label>
-            <input style="border-radius: 0px;" type="text" id="student_id" name="student_id" /><br /><br />
-            <label for="teacherGrade">Grade:</label>
-            <input style="border-radius: 0px;" type="text" id="teacher_grade" name="teacher_grade" /><br /><br />
-            <input style="border-radius: 10px; font-size: large; background-color:rgb(15, 146, 24);"
-            type="submit" name="teacher_submit" value="Submit Grade" />
-        </form>
-    </div>
+		<div style="text-align: center">
+			<form
+				action="/teacher_home"
+				id="submit_grade"
+				name="submit_answer"
+				method="post"
+			>
+				<input
+					type="hidden"
+					id="teacher_id"
+					name="teacher_id"
+					value="{{email}}"
+				/>
+                <label for="studentID">Student ID:</label>
+				<input
+					style="border-radius: 0px"
+					type="text"
+					id="student_id"
+					name="student_id"
+				/><br /><br />
+				<label for="assignmentID">Assignment ID:</label>
+				<input
+					style="border-radius: 0px"
+					type="text"
+					id="assignment_id"
+					name="assignment_id"
+				/><br /><br />
+				<label for="teacherGrade">Grade:</label>
+				<input
+					style="border-radius: 0px"
+					type="text"
+					id="teacher_grade"
+					name="teacher_grade"
+				/><br /><br />
+				<input
+					style="
+						border-radius: 10px;
+						font-size: large;
+						background-color: rgb(15, 146, 24);
+					"
+					type="submit"
+					name="teacher_submit"
+					value="Submit Grade"
+				/>
+			</form>
+			<br />
+			<br />
+		</div>
 
-    {% if submit_grade_status %}
-    <div>
-        <p>{{submit_grade_status}}</p>
-    </div>
-    {% endif %}
-</body>
+		{% if submit_grade_status %}
+		<div style="text-align: center; color: darkorange">
+			<p>{{submit_grade_status}}</p>
+		</div>
+		{% endif %}
+
+        {% if queryUngradedAssignmentOutputAlt %}
+        <br><br>
+		<div style="text-align: center; color: cadetblue">
+			<p>{{queryUngradedAssignmentOutputAlt}}</p>
+		</div>
+        {% endif %}
+
+		<div style="text-align: center;">
+        <br /><br />
+        {% if queryUngradedAssignmentOutput %}
+            <div style="text-align: center; color: cadetblue">
+                <table class="centerTable">
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Assignment ID</th>
+                        <th>Answer</th>
+                    </tr>
+                    {% for item in queryUngradedAssignmentOutput %}
+                    <tr>
+                        <td>{{item['userID']}}</td>
+                        <td>{{item['assignment_id']}}</td>
+                        <td>{{item['assignment_content']}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+		{% endif %}
+	</body>
 </html>

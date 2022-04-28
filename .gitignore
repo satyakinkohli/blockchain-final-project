@@ -3,6 +3,9 @@ frontend/__pycache
 frontend/__pycache__
 frontend/temp1.py
 frontend/temp2.py
+frontend/format-query.py
 fabric/gradenewscope/javascript/wallet
 fabric/basic-network/config
 fabric/basic-network/crypto-config
+fabric/gradenewscope/testErrorsGradeNewScope.sh
+fabric/gradenewscope/testGradeNewScope.sh
