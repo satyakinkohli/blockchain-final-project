@@ -7,12 +7,14 @@
     <title>Teacher Homepage</title>
 </head>
 <body style="background-color: black; color: white;">
+    <h2 style="color:red; text-align: center;" > GradeNewScope </h2>
+
     <div>
-        <p>Hello, {{username}}</p>
+        <p style= "text-align:right">Hello, {{username}}</p>
     </div>
 
     <div>
-        <a href="/">
+        <a href="/" style="float:right">
             <form action="/logout" method="post">
                 Logout
             </form>
@@ -34,7 +36,7 @@
             <input style="border-radius: 0px;" type="text" id="student_id" name="student_id" /><br /><br />
             <label for="teacherGrade">Grade:</label>
             <input style="border-radius: 0px;" type="text" id="teacher_grade" name="teacher_grade" /><br /><br />
-            <input style="border-radius: 10px; font-size: large;"
+            <input style="border-radius: 10px; font-size: large; background-color:rgb(15, 146, 24);"
             type="submit" name="teacher_submit" value="Submit Grade" />
         </form>
     </div>
