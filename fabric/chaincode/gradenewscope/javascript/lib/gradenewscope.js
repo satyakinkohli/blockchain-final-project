@@ -304,11 +304,13 @@ class GradeNewScope extends Contract {
             if (attempted_assignment.num_evaluated == total_teachers) {
                 let scores_list;
                 scores_list = Object.values(attempted_assignment.scores);
-                scores_list.sort()
-                let max = scores_list[scores_list.length-1]
-                let min = scores_list[0]
+                let scores_list_int;
+                scores_list_int = scores_list.map(Number);
+                scores_list_int.sort()
+                let max = scores_list_int[scores_list.length-1]
+                let min = scores_list_int[0]
                 attempted_assignment.range_of_scores = max - min;
-                attempted_assignment.final_score = scores_list[2]
+                attempted_assignment.final_score = scores_list_int[2]
                 
                 if (attempted_assignment.range_of_scores > 10) {
                     attempted_assignment.high_deviation = true;
