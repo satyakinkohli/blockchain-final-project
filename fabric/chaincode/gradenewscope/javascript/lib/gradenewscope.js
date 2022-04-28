@@ -89,7 +89,8 @@ class GradeNewScope extends Contract {
         combination_id = (assignment_id.toString()).concat("-", userID.toString());
 
         if (assign_combinations.includes(combination_id)) {
-            throw new Error (`Combination_id : ${combination_id} already submitted`)
+            console.log("You have already submitted this assignment")
+            throw new Error(`Combination_id : ${combination_id} already submitted`)
         }
 
         const scores = {}; // Dictionary to hold scores given by each teacher
@@ -144,7 +145,8 @@ class GradeNewScope extends Contract {
         let attempted_assignment;
         attempted_assignment = JSON.parse(attempted_assignmentAsBytes.toString());
 
-        if (attempted_assignment.num_evaluated < total_teachers){
+        if (attempted_assignment.num_evaluated < total_teachers) {
+            console.log("Enough teachers haven't checked the assignment yet.")
             throw new Error('Not available yet');
         }
 
@@ -285,7 +287,7 @@ class GradeNewScope extends Contract {
             }
         const attempted_assignment = JSON.parse(attempted_assignmentAsBytes.toString());
 
-        //Score can only be submitted if the teacher hasn't already submitted the score before
+        // Score can only be submitted if the teacher hasn't already submitted the score before
         if (!(teacher_ID in attempted_assignment.scores)) {
             attempted_assignment.scores[teacher_ID] = marks;
             attempted_assignment.num_evaluated += 1;
@@ -306,6 +308,7 @@ class GradeNewScope extends Contract {
                 }
             }
         } else {
+            console.log("Teacher has already graded this assignment for this student!`")
             throw new Error(`Teacher has already graded this assignment for this student!`);
         } 
         

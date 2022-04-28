@@ -11,6 +11,14 @@
         <p>Hello, {{username}}</p>
     </div>
 
+    <div>
+        <a href="/">
+            <form action="/logout" method="post">
+                Logout
+            </form>
+        </a> 
+    </div>
+
     <div style="text-align: center">
         <form action="/student_home" id="submit_answer" name="submit_answer" method="post">
             <input type="hidden" id="student_id" name="student_id" value="{{email}}">
@@ -23,9 +31,9 @@
         </form>
     </div>
 
-    {% if submit_status %}
+    {% if submit_assignment_status %}
     <div>
-        <p>{{submit_status}}</p>
+        <p>{{submit_assignment_status}}</p>
     </div>
     {% endif %}
 
@@ -39,9 +47,9 @@
         </form>
     </div>
 
-    {% if queryOutput %}
+    {% if queryAssignmentOutput %}
     <div>
-        <p>{{queryOutput}}</p>
+        <p>{{queryAssignmentOutput}}</p>
     </div>
     {% endif %}
 
@@ -53,9 +61,9 @@
         </form>
     </div>
 
-    {% if queryAllOutput %}
+    {% if queryAllAssignmentsOutput %}
     <div>
-        <p>{{queryAllOutput}}</p>
+        <p>{{queryAllAssignmentsOutput}}</p>
     </div>
     {% endif %}
 </body>
