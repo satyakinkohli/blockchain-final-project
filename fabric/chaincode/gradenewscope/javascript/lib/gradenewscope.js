@@ -146,8 +146,8 @@ class GradeNewScope extends Contract {
         attempted_assignment = JSON.parse(attempted_assignmentAsBytes.toString());
 
         if (attempted_assignment.num_evaluated < total_teachers) {
-            console.log("Enough teachers haven't checked the assignment yet.")
-            throw new Error('Not available yet');
+            console.log("Enough teachers haven't checked the assignment yet")
+            throw new Error("Enough teachers haven't checked the assignment yet");
         }
 
         // don't show registration $HELLO$ records
@@ -212,6 +212,11 @@ class GradeNewScope extends Contract {
             }
             if (res.done) {
                 await iterator.close();
+                console.log(allResults.length);
+                if (allResults.length === 0) {
+                    console.log("Enough teachers haven't checked the assignment yet")
+                    throw new Error("Enough teachers haven't checked the assignment yet");
+                }
                 console.info(allResults);
                 console.info('============= END : queryAllAssignments ===========');
                 return JSON.stringify(allResults);
@@ -264,6 +269,11 @@ class GradeNewScope extends Contract {
             }
             if (res.done) {
                 await iterator.close();
+                console.log(allResults.length);
+                if (allResults.length === 0) {
+                    console.log("No remanining assignments to evaluate right now")
+                    throw new Error("No remanining assignments to evaluate right now");
+                }
                 console.info(allResults);
                 console.info('============= END : teacherQueryUngraded ===========');
                 return JSON.stringify(allResults);

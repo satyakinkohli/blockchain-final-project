@@ -250,17 +250,15 @@ def student_home():
             if queryAssignmentResult is True:
                 var['queryAssignmentOutput'] = queryAssignmentOutput
             else:
-                var['queryAssignmentOutput'] = "Your assignment has not been evaluated yet, maybe wait a bit more?"
+                var[
+                    'queryAssignmentOutput'] = "Failed to query the assignment. Either you have not submitted this assignment, or it has not been graded by enough (5) professors yet."
         else:
             queryAllAssignmentsResult, queryAllAssignmentsOutput = fabric_queryAllAssignments(
                 var['email'])
             if queryAllAssignmentsResult is True:
-                if queryAllAssignmentsOutput == []:
-                    var['queryAllAssignmentsOutput'] = "No assignment has been evaluated until now"
-                else:
-                    var['queryAllAssignmentsOutput'] = queryAllAssignmentsOutput
+                var['queryAllAssignmentsOutput'] = queryAllAssignmentsOutput
             else:
-                var['queryAllAssignmentsOutput'] = "QueryAllAssignments Unsucessful."
+                var['queryAllAssignmentsOutput'] = "No assignment has been evaluated until now"
         return render_template('student_homepage.html', **var)
     else:
         return render_template('student_homepage.html', username=session['uname'], email=session['email'])
@@ -281,20 +279,19 @@ def teacher_home():
             assignment_id = request.form['assignment_id']
             student_id = request.form['student_id']
             teacher_grade = request.form['teacher_grade']
-            submitScoreResult = fabric_submitGrade(
+            submitScoreResult = fabric_submitScore(
                 rav['email'], student_id, assignment_id, teacher_grade)
             if submitScoreResult is True:
                 rav['submit_grade_status'] = "You have submitted your assignment grade successfully!"
             else:
-                rav['submit_grade_status'] = "Failed to submit the assignment grade. You might be attempting to evaluate the assignment again"
+                rav['submit_grade_status'] = "Failed to submit the assignment grade. You might be attempting to re-evaluate the assignment, or the assignment may not have been submitted by that student."
 
         queryUngradedAssignmentResult, queryUngradedAssignmentOutput = fabric_queryUngradedAssignment(
             rav['email'])
-        if queryUngradedAssignmentResult is True:
-            if queryUngradedAssignmentOutput == []:
-                rav['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
-            else:
-                rav['queryUngradedAssignmentOutput'] = queryUngradedAssignmentOutput
+        if queryUngradedAssignmentResult is True:    
+            rav['queryUngradedAssignmentOutput'] = queryUngradedAssignmentOutput
+        else:
+            rav['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
 
         return render_template('teacher_homepage.html', **rav)
     else:
@@ -304,13 +301,10 @@ def teacher_home():
                    'username': teacher_dict[session['email']]['uname']}
         queryUngradedAssignmentResult, queryUngradedAssignmentOutput = fabric_queryUngradedAssignment(
             ravtemp['email'])
-        if queryUngradedAssignmentResult is True:
-            if queryUngradedAssignmentOutput == []:
-                ravtemp['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
-            else:
-                ravtemp['queryUngsradedAssignmentOutput'] = queryUngradedAssignmentOutput
+        if queryUngradedAssignmentResult is True:    
+            ravtemp['queryUngradedAssignmentOutput'] = queryUngradedAssignmentOutput
         else:
-            ravtemp['queryUngradedAssignmentOutput'] = "Query Unsuccessful"
+            ravtemp['queryUngradedAssignmentOutput'] = "There is no assignment for you to grade right now."
         return render_template('teacher_homepage.html', **ravtemp)
 
 
@@ -327,12 +321,14 @@ def fabric_submitAssignment(email, assignment_id, assignment_content):
     if DEBUG:
         print(' '.join(submitAssignmentStatus))
 
+    print(submitAssignmentStatus)
+
     if submitAssignmentStatus == "None":
         return False
-    elif submitAssignmentStatus[len(submitAssignmentStatus) - 1] != "submitted":
-        return False
-    else:
+    elif submitAssignmentStatus[len(submitAssignmentStatus) - 1] == "submitted":
         return True
+    else:
+        print("Error!")
 
 
 # student queries their assignment
@@ -387,25 +383,27 @@ def format_queryAllAssignments(string):
     return list_format
 
 
-# teacher submits an assignment grade
-def fabric_submitGrade(email, student_id, assignment_id, score):
-    submitGradeStatus = "None"
+# teacher submits an assignment score
+def fabric_submitScore(email, student_id, assignment_id, score):
+    submitScoreStatus = "None"
 
     try:
-        submitGradeStatus = subprocess.check_output(
+        submitScoreStatus = subprocess.check_output(
             [NODE_PATH, FABRIC_DIR + "/invoke.js", "submitScore", email, student_id, assignment_id, score], cwd=FABRIC_DIR).decode().split()
     except:
         pass
 
     if DEBUG:
-        print(' '.join(submitGradeStatus))
+        print(' '.join(submitScoreStatus))
 
-    if submitGradeStatus == "None":
+    print(submitScoreStatus)
+
+    if submitScoreStatus == "None":
         return False
-    elif submitGradeStatus[len(submitGradeStatus) - 1] != "submitted":
-        return False
-    else:
+    elif submitScoreStatus[len(submitScoreStatus) - 1] == "submitted":
         return True
+    else:
+        print("Error!")
 
 
 # teacher queries all their ungraded assignment grades
@@ -423,10 +421,8 @@ def fabric_queryUngradedAssignment(email):
 
     if queryUngradedAssignmentOutput == "None":
         return False, ""
-    elif (str(queryUngradedAssignmentOutput[-11:])).strip() == "successful":
-        return True, format_queryUngradedAssignment(str(queryUngradedAssignmentOutput))
     else:
-        return False, ""
+        return True, format_queryUngradedAssignment(str(queryUngradedAssignmentOutput))
 
 
 # formats the output of the teacher queryUngradedAssignment
