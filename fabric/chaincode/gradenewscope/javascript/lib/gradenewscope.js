@@ -305,7 +305,7 @@ class GradeNewScope extends Contract {
                 let scores_list;
                 scores_list = Object.values(attempted_assignment.scores);
                 let scores_list_int;
-                scores_list_int = scores_list.map(Number);
+                scores_list_int = [parseInt(scores_list[0]),parseInt(scores_list[1]), parseInt(scores_list[2]), parseInt(scores_list[3]), parseInt(scores_list[4])]
                 scores_list_int.sort()
                 let max = scores_list_int[scores_list.length-1]
                 let min = scores_list_int[0]
