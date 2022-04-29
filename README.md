@@ -1,12 +1,12 @@
 # blockchain-final-project
 
-CS2361 Final Project: GradeNewScope
-Mehul Gupta, Satyakin Kohli
-Final Submission
-28th April, 2022
+##### CS2361 Final Project: GradeNewScope
+##### Mehul Gupta, Satyakin Kohli
+##### Final Submission
+##### 28th April, 2022**
 
 
-Demo Recording: Demo Recording.mov
+[Demo Video Recording](https://drive.google.com/file/d/1mLlvx75kZkOGq7sA_zat9AMJ5J1O1kJ5/view?usp=sharing)
 
 
 ## 1. Introduction ##
@@ -56,7 +56,7 @@ userID : This is an integer storing the userID of the student
 
 
 ## 5. Stack Used ##
-The frontend was made using HTML and CSS, while the backend was managed using Flask, which is a Python web framework. We have taken inspiration from this last year project.
+The frontend was made using HTML and CSS, while the backend was managed using Flask, which is a Python web framework. We have taken inspiration from this [last year project](https://github.com/agrawalnandini/hyperfunds.git).
 
 
 ## 6. Chaincode Functions ##
