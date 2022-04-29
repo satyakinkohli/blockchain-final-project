@@ -60,32 +60,31 @@ The frontend was made using HTML and CSS, while the backend was managed using Fl
 
 
 ## 6. Chaincode Functions ##
-
-submitAssignment():
+_submitAssignment()_:
 This function is called by a student. The arguments passed are ctx, assignment_id and assignment_content. The userID is derived from ctx.. 
 - This function creates an attempted_assignment object corresponding to the given combination of assignment_id and userID and stores it onto the ledger state. 
 - The assignment_content field of the attempted_assignment object is updated as per the given input to the function. The userID field is also updated. 
 - The rest of the fields of the attempted_assignment object are defined as 0, empty or null and will only be updated when other functions are invoked
 - A check is implemented to ensure that the combination_key is unique -> A student should not be allowed to submit the same assignment twice.
 
-queryAssignment():
+_queryAssignment()_:
 This function is called by a student. The arguments passed are ctx, assignment_id and the tempuserID is derived from ctx.
 - The function returns the attempted_assignment object associated with the combination_id (derived from assignment_id and tempuserId)
 - Some of the fields are deleted which need not be shown to the student - scores dictionary, num_evaluated and userID)
 - A check is implemented to ensure that the combination_id is valid.
 - A check is also implemented to ensure that all the teachers have graded the assignment when the student tries to query it. If they haven’t, the students will not be able to query it.
 
-queryAllAssignments()
+_queryAllAssignments()_:
 This function is called by a student. The only argument passed is ctx. tempuserID is derived from ctx.
 - The function returns an array containing all the attempted_assignment objects associated with the derived tempuserID (studentID) given they have been evaluated by 5 teachers.
 - Some of the fields are deleted from each object which need not be shown to the student - scores dictionary, num_evaluated and userID)
 
-teacherQueryUngraded()
+_teacherQueryUngraded()_:
 This function is called by a teacher. The only argument passed is ctx. The teacher_id is derived.
 - This function returns an array containing all the attempted_assignment where the scores dictionary does not contain the teacher id. These are the assignments which are yet to be graded by the teacher who is logged in.
 - The fields of the attempted_assignment which are retained are userID, assignment_id and assignment_content.
 
-submitScore()
+_submitScore()_:
 This function is called by a teacher. The arguments passed are ctx, student_id, assignment_id and marks. The teacher_id is derived from ctx.
 - This function firstly updates the scores dictionary of the attempted_assignment object corresponding to the combination_id (derived by student_id and assignment_id). The teacher id is the key and the marks argument is the value.
 - There is a check to ensure that the combination_id is valid.
@@ -98,16 +97,12 @@ This function is called by a teacher. The arguments passed are ctx, student_id, 
 
 ## 7. Other Important Javascript Files ##
 
-enrollAdmin.js
-This file enrolls an admin to GradeNewScope. An admin is essential for the functioning of our application.
+_enrollAdmin.js_: This file enrolls an admin to GradeNewScope. An admin is essential for the functioning of our application.
 
-registerUser.js
-This file registers a user to GradeNewScope A new wallet is subsequently created for the registrant. We have 2 types of users- teachers and students each having their respective portal for interacting with our application. This file is invoked with the email id submitted by the registrant.
+_registerUser.js_: This file registers a user to GradeNewScope A new wallet is subsequently created for the registrant. We have 2 types of users- teachers and students each having their respective portal for interacting with our application. This file is invoked with the email id submitted by the registrant.
 
-query.js
-This file is used to invoke 3 functions in the chaincode - queryAssignment(), queryAllAssignments() and teacherQueryUngraded() with the appropriate arguments. 
+_query.js_: This file is used to invoke 3 functions in the chaincode - queryAssignment(), queryAllAssignments() and teacherQueryUngraded() with the appropriate arguments. 
 
-invoke.js
-This file is used to invoke 2 functions in the chaincode - submitAssignment() and  submitScore() with the appropriate arguments. 
+_invoke.js_: This file is used to invoke 2 functions in the chaincode - submitAssignment() and  submitScore() with the appropriate arguments. 
 
 
