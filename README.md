@@ -1,10 +1,6 @@
 # blockchain-final-project
 
 ##### CS2361 Final Project: GradeNewScope
-Mehul Gupta, Satyakin Kohli
-Final Submission
-28th April, 2022**
-
 
 [Demo Video Recording](https://drive.google.com/file/d/1mLlvx75kZkOGq7sA_zat9AMJ5J1O1kJ5/view?usp=sharing)
 
