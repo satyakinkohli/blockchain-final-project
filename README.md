@@ -39,21 +39,19 @@ We make use of the following global variable in our chaincode:
 Assign_combinations: A list containing the combination_id of all the assignments that have been submitted.
 
 The asset is a key:value pair which is defined as follows:
-key: combination_id
-value: {assignment_id = int, assignment_content = string, num_evaluated = int, scores = {}, range_of_scores = int, high_deviation = bool, final_score = int, userID = string}
 
 | Key  | Value |
 | ------------- | ------------- |
 | (combination_id)  | Attempted_assignment = {assignment_id, assignment_content, num_evaluated, scores, range_of_scores, high_deviation, final_score, userID}  |
 
 What each of these mean - 
-combination_id : It is the unique identifier of a student’s attempted assignment and it is obtained via the concatenation of assignment_id and userID of the student
-assignment_content : This is a string representing the student’s submission in textual format . Eg. “A: The reason for this is… , B: The most important factor is … , C: Turing’s contribution to … “
-num_evaluated: This is an integer variable which keeps count of the number of teachers who have evaluated and graded this assignment
-scores: This is a dictionary which maps the <teacher_id> with the score they gave to the student. Essentially, scores = {<teacher_id>: score}.
-range_of_scores: This is an integer which stores the difference between the maximum and minimum score that the student has received on that assignment.
-high_deviation: This is a boolean variable which is set to 1 if the range_of_scores > 10 and 0 otherwise
-final_score: This is an integer value which stores the final score the student receives. 
+- combination_id : It is the unique identifier of a student’s attempted assignment and it is obtained via the concatenation of assignment_id and userID of the student
+- assignment_content : This is a string representing the student’s submission in textual format . Eg. “A: The reason for this is… , B: The most important factor is … , C: Turing’s contribution to … “
+- num_evaluated: This is an integer variable which keeps count of the number of teachers who have evaluated and graded this assignment
+- scores: This is a dictionary which maps the <teacher_id> with the score they gave to the student. Essentially, scores = {<teacher_id>: score}.
+- range_of_scores: This is an integer which stores the difference between the maximum and minimum score that the student has received on that assignment.
+- high_deviation: This is a boolean variable which is set to 1 if the range_of_scores > 10 and 0 otherwise
+- final_score: This is an integer value which stores the final score the student receives. 
 userID : This is an integer storing the userID of the student
 
 
@@ -65,37 +63,37 @@ The frontend was made using HTML and CSS, while the backend was managed using Fl
 
 submitAssignment():
 This function is called by a student. The arguments passed are ctx, assignment_id and assignment_content. The userID is derived from ctx.. 
-This function creates an attempted_assignment object corresponding to the given combination of assignment_id and userID and stores it onto the ledger state. 
-The assignment_content field of the attempted_assignment object is updated as per the given input to the function. The userID field is also updated. 
-The rest of the fields of the attempted_assignment object are defined as 0, empty or null and will only be updated when other functions are invoked
-A check is implemented to ensure that the combination_key is unique -> A student should not be allowed to submit the same assignment twice.
+- This function creates an attempted_assignment object corresponding to the given combination of assignment_id and userID and stores it onto the ledger state. 
+- The assignment_content field of the attempted_assignment object is updated as per the given input to the function. The userID field is also updated. 
+- The rest of the fields of the attempted_assignment object are defined as 0, empty or null and will only be updated when other functions are invoked
+- A check is implemented to ensure that the combination_key is unique -> A student should not be allowed to submit the same assignment twice.
 
 queryAssignment():
 This function is called by a student. The arguments passed are ctx, assignment_id and the tempuserID is derived from ctx.
-The function returns the attempted_assignment object associated with the combination_id (derived from assignment_id and tempuserId)
-Some of the fields are deleted which need not be shown to the student - scores dictionary, num_evaluated and userID)
-A check is implemented to ensure that the combination_id is valid.
-A check is also implemented to ensure that all the teachers have graded the assignment when the student tries to query it. If they haven’t, the students will not be able to query it.
+- The function returns the attempted_assignment object associated with the combination_id (derived from assignment_id and tempuserId)
+- Some of the fields are deleted which need not be shown to the student - scores dictionary, num_evaluated and userID)
+- A check is implemented to ensure that the combination_id is valid.
+- A check is also implemented to ensure that all the teachers have graded the assignment when the student tries to query it. If they haven’t, the students will not be able to query it.
 
 queryAllAssignments()
 This function is called by a student. The only argument passed is ctx. tempuserID is derived from ctx.
-The function returns an array containing all the attempted_assignment objects associated with the derived tempuserID (studentID) given they have been evaluated by 5 teachers.
-Some of the fields are deleted from each object which need not be shown to the student - scores dictionary, num_evaluated and userID)
+- The function returns an array containing all the attempted_assignment objects associated with the derived tempuserID (studentID) given they have been evaluated by 5 teachers.
+- Some of the fields are deleted from each object which need not be shown to the student - scores dictionary, num_evaluated and userID)
 
 teacherQueryUngraded()
 This function is called by a teacher. The only argument passed is ctx. The teacher_id is derived.
-This function returns an array containing all the attempted_assignment where the scores dictionary does not contain the teacher id. These are the assignments which are yet to be graded by the teacher who is logged in.
-The fields of the attempted_assignment which are retained are userID, assignment_id and assignment_content.
+- This function returns an array containing all the attempted_assignment where the scores dictionary does not contain the teacher id. These are the assignments which are yet to be graded by the teacher who is logged in.
+- The fields of the attempted_assignment which are retained are userID, assignment_id and assignment_content.
 
 submitScore()
 This function is called by a teacher. The arguments passed are ctx, student_id, assignment_id and marks. The teacher_id is derived from ctx.
-This function firstly updates the scores dictionary of the attempted_assignment object corresponding to the combination_id (derived by student_id and assignment_id). The teacher id is the key and the marks argument is the value.
-There is a check to ensure that the combination_id is valid.
-There is another check to ensure that this teacher hasn’t already graded this assignment
-The num_evaluated field of the attempted_assignment object is incremented by 1
-If num_evaluated equals the total number of teachers, it implies that all teachers have graded that assignment for the given student
-This is when the final score and the range of scores is calculated. 
-If the range of scores > 10, the high_deviation variable is set to true otherwise false.
+- This function firstly updates the scores dictionary of the attempted_assignment object corresponding to the combination_id (derived by student_id and assignment_id). The teacher id is the key and the marks argument is the value.
+- There is a check to ensure that the combination_id is valid.
+- There is another check to ensure that this teacher hasn’t already graded this assignment
+- The num_evaluated field of the attempted_assignment object is incremented by 1
+- If num_evaluated equals the total number of teachers, it implies that all teachers have graded that assignment for the given student
+- This is when the final score and the range of scores is calculated. 
+- If the range of scores > 10, the high_deviation variable is set to true otherwise false.
 
 
 ## 7. Other Important Javascript Files ##
