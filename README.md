@@ -17,13 +17,13 @@ The application allows students to upload their assignments/answer scripts which
 The blockchain peer to peer network guarantees accountability, transparency and security. In case of high deviation in marks, teachers can be questioned and held accountable if there was any bias or carelessness. There is provision for an immutable ledger such that record of grades will always be available for public access and cannot be edited once included into a valid block. This ensures transparency. Students also have a sense of security because they know that there is no authority that can alter their records once their final score for a particular assignment has been calculated and pushed into the network.
 
 
-2. Project Goals
+## 2. Project Goals ##
 Following from the introduction offered above, the project goals are as follows:
 to ensure that students get assigned fair grades which justify their performance on the assignment/exams and reflect a broad consensus among the instructors regarding their grades.
 to ensure professors are held accountable and face appropriate consequences for not marking in an objective manner as per the grading scheme
 
 
-3. The Client-side working
+## 3. The Client-side working ##
 To provide the functionalities promised in the above section, our application will need to have a certain structure with different components performing different jobs. Flow of the application - 
 
 The first part is register/login. The user will be prompted for email id, username and password. They will have the option to either sign up or sign in. If one has already registered with these details, they can sign in otherwise sign up. For teachers, the email id must end in ‘@teacher.com’. Likewise, the email id for students must end in ‘@student.com’. Accordingly, the user is taken to the student or teacher portal. There will be exactly 5 teachers needed to be registered on the portal and there can be as many students as desired.
@@ -33,7 +33,7 @@ On the student portal, the student will have an option to upload their submissio
 On the teacher portal, the teacher will see a table where each row represents an assignment that he or she is yet to grade. That table will include the student id, assignment id and assignment content for the teacher to refer. Besides, there will be a functionality to submit the scores for a particular assignment of a particular student. The teacher will be prompted for assignment id, student id and marks. After a teacher has graded a particular assignment, he will no longer see this assignment in the table containing the list of ungraded assignments.
 
 
-4. Application Rulebook
+## 4. Application Rulebook ##
 We make use of the following global variable in our chaincode:
 
 Assign_combinations: A list containing the combination_id of all the assignments that have been submitted.
@@ -42,11 +42,9 @@ The asset is a key:value pair which is defined as follows:
 key: combination_id
 value: {assignment_id = int, assignment_content = string, num_evaluated = int, scores = {}, range_of_scores = int, high_deviation = bool, final_score = int, userID = string}
 
-Key
-Value
-(combination_id)
-Attempted_assignment = {assignment_id, assignment_content, num_evaluated, scores, range_of_scores, high_deviation, final_score, userID}
-
+| Key  | Value |
+| ------------- | ------------- |
+| (combination_id)  | Attempted_assignment = {assignment_id, assignment_content, num_evaluated, scores, range_of_scores, high_deviation, final_score, userID}  |
 
 What each of these mean - 
 combination_id : It is the unique identifier of a student’s attempted assignment and it is obtained via the concatenation of assignment_id and userID of the student
@@ -59,11 +57,11 @@ final_score: This is an integer value which stores the final score the student r
 userID : This is an integer storing the userID of the student
 
 
-5. Stack Used
+## 5. Stack Used ##
 The frontend was made using HTML and CSS, while the backend was managed using Flask, which is a Python web framework. We have taken inspiration from this last year project.
 
 
-6. Chaincode Functions
+## 6. Chaincode Functions ##
 
 submitAssignment():
 This function is called by a student. The arguments passed are ctx, assignment_id and assignment_content. The userID is derived from ctx.. 
@@ -100,7 +98,7 @@ This is when the final score and the range of scores is calculated.
 If the range of scores > 10, the high_deviation variable is set to true otherwise false.
 
 
-7. Other Important Javascript Files
+## 7. Other Important Javascript Files ##
 
 enrollAdmin.js
 This file enrolls an admin to GradeNewScope. An admin is essential for the functioning of our application.
